@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Project</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #1f2937;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            margin-top: 25px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .back {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h1>ProjectFlow</h1>
+    </div>
+
+    <div class="container">
+
+        <h2>Create New Project</h2>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <label for="name">Project Name</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter project name"
+                required
+            >
+
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Enter project description"
+            ></textarea>
+
+            <button type="submit" class="btn">
+                Create Project
+            </button>
+
+            <a href="{% url 'home' %}" class="back">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

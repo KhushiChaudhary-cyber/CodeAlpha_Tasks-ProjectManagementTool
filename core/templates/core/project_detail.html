@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ project.name }} - ProjectFlow</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+        }
+
+        .navbar {
+            background: #1f2937;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .project-header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .project-header h2 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        .project-header p {
+            color: #666;
+        }
+
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tasks-header h2 {
+            margin: 0;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .task-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .task-card h3 {
+            margin-top: 0;
+        }
+
+        .task-card p {
+            color: #666;
+        }
+
+        .status {
+            display: inline-block;
+            background: #e5e7eb;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .assigned {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .comments {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .comments h4 {
+            margin-bottom: 15px;
+        }
+
+        .comment {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .comment strong {
+            color: #1f2937;
+        }
+
+        .comment small {
+            color: #888;
+        }
+
+        .comment-form {
+            margin-top: 15px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .comment-btn {
+            margin-top: 10px;
+            background: #2563eb;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .empty {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h1>ProjectFlow</h1>
+        <span>Project Management Tool</span>
+    </div>
+
+    <div class="container">
+
+        <a href="{% url 'home' %}" class="back">
+            ← Back to Projects
+        </a>
+
+        <div class="project-header">
+
+            <h2>{{ project.name }}</h2>
+
+            <p>
+                {{ project.description }}
+            </p>
+
+            <p>
+                <strong>Created:</strong>
+                {{ project.created_at|date:"d M Y" }}
+            </p>
+
+        </div>
+
+        <div class="tasks-header">
+
+            <h2>Tasks</h2>
+
+            <a href="{% url 'create_task' project.id %}" class="btn">
+                + New Task
+            </a>
+
+        </div>
+
+        {% if tasks %}
+
+            {% for task in tasks %}
+
+                <div class="task-card">
+
+                    <h3>{{ task.title }}</h3>
+
+                    <p>
+                        {{ task.description }}
+                    </p>
+
+                    <span class="status">
+                        {{ task.get_status_display }}
+                    </span>
+
+                    {% if task.assigned_to %}
+                        <p class="assigned">
+                            <strong>Assigned to:</strong>
+                            {{ task.assigned_to.username }}
+                        </p>
+                    {% else %}
+                        <p class="assigned">
+                            <strong>Assigned to:</strong>
+                            Unassigned
+                        </p>
+                    {% endif %}
+
+
+                    <!-- Comments -->
+
+                    <div class="comments">
+
+                        <h4>Comments</h4>
+
+                        {% if task.comments.all %}
+
+                            {% for comment in task.comments.all %}
+
+                                <div class="comment">
+
+                                    <strong>
+                                        {{ comment.user.username }}
+                                    </strong>
+
+                                    <small>
+                                        {{ comment.created_at|date:"d M Y H:i" }}
+                                    </small>
+
+                                    <p>
+                                        {{ comment.text }}
+                                    </p>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p>
+                                No comments yet.
+                            </p>
+
+                        {% endif %}
+
+
+                        <!-- Add Comment -->
+
+                        <form
+                            method="POST"
+                            action="{% url 'add_comment' task.id %}"
+                            class="comment-form"
+                        >
+
+                            {% csrf_token %}
+
+                            <textarea
+                                name="text"
+                                placeholder="Write a comment..."
+                                required
+                            ></textarea>
+
+                            <button
+                                type="submit"
+                                class="comment-btn"
+                            >
+                                Add Comment
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+
+                <h3>No tasks yet</h3>
+
+                <p>
+                    Create a task to start managing this project.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>
